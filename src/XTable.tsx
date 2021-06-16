@@ -18,13 +18,17 @@ import TableRowItem from './components/TableRow'
 import { Typography } from '@material-ui/core'
 import LinearProgress from '@material-ui/core/LinearProgress'
 
-// eslint-disable-next-line no-unused-vars
 import type {
+  // eslint-disable-next-line no-unused-vars
   CustomRowRendererParams,
+  // eslint-disable-next-line no-unused-vars
   SelectedType,
+  // eslint-disable-next-line no-unused-vars
   XTableProps,
+  // eslint-disable-next-line no-unused-vars
   XTableRef
 } from './types'
+
 import { getComparator, prepareDataToExport, stableSort } from './utils'
 import exportToExcel from './exportToExcel'
 import TableTopHead from './components/TableTopHead'
@@ -70,7 +74,9 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
       pagination = true,
       showEmptyRows = true,
       emptyErrorMessage = 'noDataAvailableForThisTable',
-      onSelectedChange
+      onSelectedChange,
+      rowsPerPageOptions = rowsOptions,
+      dense = false
     } = props
 
     const classes = useStyles()
@@ -78,7 +84,6 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
     const [orderBy, setOrderBy] = useState(defaultOrderField)
     const [selected, setSelected] = useState<SelectedType[]>([])
     const [page, setPage] = useState(0)
-    const [dense] = useState<boolean>(false)
     const [rowsPerPage, setRowsPerPage] = useState(defaultRowsPerPage)
     const rows = data
 
@@ -315,7 +320,7 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
 */}
           {pagination && (rows?.length > rowsPerPage || rows?.length > 5) ? (
             <TablePagination
-              rowsPerPageOptions={rowsOptions}
+              rowsPerPageOptions={rowsPerPageOptions}
               component='div'
               count={rows.length || 0}
               rowsPerPage={rowsPerPage}

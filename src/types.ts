@@ -2,13 +2,13 @@ export type HeadCell = {
   numeric?: boolean
   id: string
   disablePadding?: boolean
-  label: string,
-  colSpan ?: number
+  label: string
+  colSpan?: number
 }
 
 export type XTableRef = {
-  getSelected: () => SelectedType[],
-  setSelected: (selectedIds: SelectedType[]) =>  void,
+  getSelected: () => SelectedType[]
+  setSelected: (selectedIds: SelectedType[]) => void
   excel: (title: string) => Promise<any>
 }
 
@@ -16,16 +16,17 @@ export type CheckRowIsSelectableCallback<DataType> = (
   row: DataType,
   index?: number
 ) => boolean
-export type TableRowProps<DataType> = CustomRowRendererParams<DataType> & DataType & {
-  style: any,
-  children: JSX.Element | JSX.Element[],
-  className?: string
-}
+export type TableRowProps<DataType> = CustomRowRendererParams<DataType> &
+  DataType & {
+    style: any
+    children: JSX.Element | JSX.Element[]
+    className?: string
+  }
 export type ItemToRow<DataType> = {
-  align?: 'left' | 'right',
-  type: 'string' | 'number' | 'text' | 'check' | 'render',
-  value: string | number | ItemToRowCallback<DataType>,
-  valueRaw ?:  any
+  align?: 'left' | 'right'
+  type: 'string' | 'number' | 'text' | 'check' | 'render'
+  value: string | number | ItemToRowCallback<DataType>
+  valueRaw?: any
 }
 
 export type ItemToRowCallback<DataType> = (
@@ -40,7 +41,10 @@ export type OnSelectCallback<DataType> = (
 ) => void
 export type SelectedType = string | number
 export type OnSelectedChangeCallback = (keys: SelectedType[]) => void
-export type ExportRowMapperCallback<DataType> = (row: DataType, index ?: number) =>  DataType;
+export type ExportRowMapperCallback<DataType> = (
+  row: DataType,
+  index?: number
+) => DataType
 export type CustomRowRendererParams<DataType> = Pick<
   XTableProps<DataType>,
   'checkRowIsSelectable' | 'uniqueKey' | 'styled'
@@ -50,7 +54,7 @@ export type CustomRowRendererParams<DataType> = Pick<
   index: number
   onSelect: OnSelectCallback<DataType>
   itemToRow: ItemToRowCallback<DataType>
-  handleClick ?: HandleClickCallback
+  handleClick?: HandleClickCallback
   isItemSelected: boolean
 }
 
@@ -80,4 +84,6 @@ export type XTableProps<DataType extends Object> = {
   emptyErrorMessage?: string
   allRowsSelectable?: boolean
   onSelectedChange?: OnSelectedChangeCallback
+  rowsPerPageOptions: number[]
+  dense: false
 }
