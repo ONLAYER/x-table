@@ -5,15 +5,12 @@ import React, {
   useState,
   useImperativeHandle
 } from 'react'
-import { makeStyles } from '@material-ui/core/styles'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
 import TableContainer from '@material-ui/core/TableContainer'
 import TablePagination from '@material-ui/core/TablePagination'
 import TableRow from '@material-ui/core/TableRow'
-
-import Paper from '@material-ui/core/Paper'
 import TableRowItem from './components/TableRow'
 import { Typography } from '@material-ui/core'
 import LinearProgress from '@material-ui/core/LinearProgress'
@@ -35,23 +32,6 @@ import TableTopHead from './components/TableTopHead'
 import EnhancedTableHead from './components/EnhancedTableHead'
 
 const rowsOptions = [5, 10, 25]
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: '100%',
-    background: `${theme.palette.primary.dark}`
-  },
-  paper: {
-    width: '100%',
-    marginBottom: theme.spacing(2),
-    background: `${theme.palette.primary.dark}`
-  },
-  table: {
-    minWidth: 750,
-    borderCollapse: 'separate',
-    padding: '5px 15px'
-  }
-}))
 
 const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
   (props, ref) => {
@@ -76,18 +56,26 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
       emptyErrorMessage = 'noDataAvailableForThisTable',
       onSelectedChange,
       rowsPerPageOptions = rowsOptions,
-      dense = false
+      dense = false,
+      totalRowsLength,
+      classes
     } = props
 
-    const classes = useStyles()
+    // const classes = useStyles()
     const [order, setOrder] = useState(defaultOrderDirection)
     const [orderBy, setOrderBy] = useState(defaultOrderField)
     const [selected, setSelected] = useState<SelectedType[]>([])
     const [page, setPage] = useState(0)
     const [rowsPerPage, setRowsPerPage] = useState(defaultRowsPerPage)
     const rows = data
+    const rowsLength =
+      typeof totalRowsLength !== 'undefined'
+        ? totalRowsLength
+        : rows && rows.length
+        ? rows.length
+        : 0
 
-    const sortableColumns = useMemo(() => {
+    const sortableColumns = useMemo<number[]>(() => {
       let columns: number[] = []
 
       if (sortOperationAllowedColumns) {
@@ -150,7 +138,8 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
       () => ({
         getSelected: () => selected,
         setSelected: (selectedIds: SelectedType[]) => setSelected(selectedIds),
-        excel: (title: string) => exportExcel(title)
+        excel: (title: string) => exportExcel(title),
+        setPage: (page: number) => setPage(page)
       }),
       [selected]
     )
@@ -186,14 +175,13 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
     )
 
     // @ts-ignore
-    // todo: add approiate definitions
+    // todo: add appropriate definitions
     const handleChangePage = (_, newPage) => {
       setPage(newPage)
     }
 
     // @ts-ignore
-    // todo: add approiate definitions
-
+    // todo: add appropriate definitions
     const handleChangeRowsPerPage = (event) => {
       setRowsPerPage(parseInt(event.target.value, 10))
       setPage(0)
@@ -266,74 +254,69 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
     }, [checkRowIsSelectable, rows])
 
     return (
-      <div className={classes.root}>
-        <Paper className={classes.paper}>
-          {loading ? (
-            <LinearProgress className='my-5 p-3' color='secondary' />
-          ) : null}
-          <TableContainer>
-            <Table
-              className={classes.table}
-              aria-labelledby='tableTitle'
-              size={dense ? 'small' : 'medium'}
-              aria-label='enhanced table'
-            >
-              {topHeadCells ? <TableTopHead data={topHeadCells} /> : null}
+      <>
+        {loading ? (
+          <LinearProgress className='my-5 p-3' color='secondary' />
+        ) : null}
+        <TableContainer classes={classes.tableContainer}>
+          <Table
+            classes={classes.table}
+            aria-labelledby='tableTitle'
+            size={dense ? 'small' : 'medium'}
+            aria-label='enhanced table'
+          >
+            {topHeadCells ? <TableTopHead data={topHeadCells} /> : null}
 
-              <EnhancedTableHead
-                headCells={headCells}
-                numSelected={selected.length}
-                order={order}
-                sortableIndexes={sortableColumns}
-                orderBy={orderBy}
-                uniqueKey={uniqueKey}
-                onSelectAllClick={handleSelectAllClick}
-                onRequestSort={handleRequestSort}
-                rowCount={selecteableRowCount}
-              />
-              <TableBody>
-                {rowsSorted &&
-                  rowsSorted
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map(rowRenderer)}
-
-                {loading === false && rows.length === 0 ? (
-                  <TableRow>
-                    <TableCell align='center' colSpan={headCells.length + 1}>
-                      <Typography variant='subtitle1'>
-                        {emptyErrorMessage}
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                ) : null}
-
-                {showEmptyRows && emptyRows && emptyRows > 0 && (
-                  <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
-                    <TableCell colSpan={headCells.length + 1} />
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          {/*
-                <ThemeProvider theme={(outerTheme) => createMuiTheme(outerTheme, locales[locale])}>
-*/}
-          {pagination && (rows?.length > rowsPerPage || rows?.length > 5) ? (
-            <TablePagination
-              rowsPerPageOptions={rowsPerPageOptions}
-              component='div'
-              count={rows.length || 0}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onChangePage={handleChangePage}
-              onChangeRowsPerPage={handleChangeRowsPerPage}
+            <EnhancedTableHead
+              headCells={headCells}
+              numSelected={selected.length}
+              order={order}
+              sortableIndexes={sortableColumns}
+              orderBy={orderBy}
+              uniqueKey={uniqueKey}
+              onSelectAllClick={handleSelectAllClick}
+              onRequestSort={handleRequestSort}
+              rowCount={selecteableRowCount}
             />
-          ) : null}
-          {/*
-                </ThemeProvider>
-*/}
-        </Paper>
-      </div>
+            <TableBody classes={classes.tableBody}>
+              {rowsSorted &&
+                rowsSorted
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map(rowRenderer)}
+
+              {loading === false && rows.length === 0 ? (
+                <TableRow classes={classes.tableRow}>
+                  <TableCell align='center' colSpan={headCells.length + 1}>
+                    <Typography variant='subtitle1'>
+                      {emptyErrorMessage}
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              ) : null}
+
+              {showEmptyRows && emptyRows && emptyRows > 0 && (
+                <TableRow
+                  classes={classes.tableRow}
+                  style={{ height: (dense ? 33 : 53) * emptyRows }}
+                >
+                  <TableCell colSpan={headCells.length + 1} />
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        {pagination && (rowsLength > rowsPerPage || rowsLength > 5) ? (
+          <TablePagination
+            rowsPerPageOptions={rowsPerPageOptions}
+            component='div'
+            count={rowsLength}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onChangePage={handleChangePage}
+            onChangeRowsPerPage={handleChangeRowsPerPage}
+          />
+        ) : null}
+      </>
     )
   }
 )

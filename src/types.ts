@@ -1,3 +1,15 @@
+// eslint-disable-next-line no-unused-vars
+import type { TablePaginationClassKey } from '@material-ui/core/TablePagination'
+// eslint-disable-next-line no-unused-vars
+import { TableBodyClassKey } from '@material-ui/core/TableBody/TableBody'
+// eslint-disable-next-line no-unused-vars
+import { TableHeadClassKey } from '@material-ui/core/TableHead/TableHead'
+// eslint-disable-next-line no-unused-vars
+import { TableClassKey } from '@material-ui/core/Table/Table'
+// eslint-disable-next-line no-unused-vars
+import { TableRowClassKey } from '@material-ui/core/TableRow/TableRow'
+// eslint-disable-next-line no-unused-vars
+import { TableContainerClassKey } from '@material-ui/core/TableContainer'
 export type HeadCell = {
   numeric?: boolean
   id: string
@@ -10,6 +22,7 @@ export type XTableRef = {
   getSelected: () => SelectedType[]
   setSelected: (selectedIds: SelectedType[]) => void
   excel: (title: string) => Promise<any>
+  setPage: (page: number) => void
 }
 
 export type CheckRowIsSelectableCallback<DataType> = (
@@ -63,8 +76,22 @@ export type CustomRowRendererCallback<DataType> = (
   params?: CustomRowRendererParams<DataType>
 ) => JSX.Element
 
+type ClassMap<Keys extends string> = {
+  [key in Keys]: string
+}
+
+type Classes = {
+  tablePagination: ClassMap<TablePaginationClassKey>
+  tableBody: ClassMap<TableBodyClassKey>
+  tableHead: ClassMap<TableHeadClassKey>
+  table: ClassMap<TableClassKey>
+  tableRow: ClassMap<TableRowClassKey>
+  tableContainer: ClassMap<TableContainerClassKey>
+}
+
 export type XTableProps<DataType extends Object> = {
   data: DataType[]
+  classes: Classes
   headCells: HeadCell[]
   itemToRow: ItemToRowCallback<DataType>
   checkRowIsSelectable?: CheckRowIsSelectableCallback<DataType>
@@ -85,5 +112,6 @@ export type XTableProps<DataType extends Object> = {
   allRowsSelectable?: boolean
   onSelectedChange?: OnSelectedChangeCallback
   rowsPerPageOptions: number[]
+  totalRowsLength?: number
   dense: false
 }
