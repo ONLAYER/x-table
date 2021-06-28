@@ -58,7 +58,7 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
       rowsPerPageOptions = rowsOptions,
       dense = false,
       totalRowsLength,
-      classes
+      classes = {}
     } = props
 
     // const classes = useStyles()
@@ -83,7 +83,7 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
           .map((_, i) => ({ index: i, label: _.id }))
           .filter((cell) => sortOperationAllowedColumns.includes(cell.label))
           .map((item) => item.index)
-      } else if (rows && rows.length) {
+      } else if (rows && rows.length && itemToRow) {
         const row = itemToRow(rows[0])
 
         row.forEach((row, i) => {
@@ -254,7 +254,7 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
     }, [checkRowIsSelectable, rows])
 
     return (
-      <>
+      <React.Fragment>
         {loading ? (
           <LinearProgress className='my-5 p-3' color='secondary' />
         ) : null}
@@ -316,7 +316,7 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
             onChangeRowsPerPage={handleChangeRowsPerPage}
           />
         ) : null}
-      </>
+      </React.Fragment>
     )
   }
 )

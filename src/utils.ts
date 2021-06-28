@@ -1,9 +1,15 @@
-// eslint-disable-next-line no-unused-vars
-import type { ExportRowMapperCallback, HeadCell, ItemToRowCallback } from "./types";
+import type {
+  // eslint-disable-next-line no-unused-vars
+  ExportRowMapperCallback,
+  // eslint-disable-next-line no-unused-vars
+  HeadCell,
+  // eslint-disable-next-line no-unused-vars
+  XTableProps
+} from './types'
 import React from 'react'
 
 type ExportResponse = {
-  rows: any[],
+  rows: any[]
   headers: string[]
   topHeadCells?: HeadCell[]
 }
@@ -12,12 +18,11 @@ export function prepareDataToExport<DataType>(
   headCells: HeadCell[],
   topHeadCells: HeadCell[],
   rows: DataType[],
-  itemToRow: ItemToRowCallback<DataType>,
-  exportRowMapper ?: ExportRowMapperCallback<DataType>
+  itemToRow: XTableProps<DataType>['itemToRow'],
+  exportRowMapper?: ExportRowMapperCallback<DataType>
 ): ExportResponse {
   const headersNew: string[] = []
   const headers: string[] = headCells.map((cell) => cell.label)
-
 
   const exportRows: Object[] = rows.map((row, index) => {
     const data: any[] = []
@@ -27,38 +32,40 @@ export function prepareDataToExport<DataType>(
       row = exportRowMapper(row)
     }
 
-    itemToRow(row, index).forEach((item, i) => {
-      const type = item.type
-
-      if ((type === 'text' || type === 'number') && !React.isValidElement(item.value)) {
-
-        data.push(item.value)
-
-        if (headers[i] !== undefined && !headersNew.includes(headers[i])) {
-          headersNew.push(headers[i])
-        }
-      } else if (
-        type === 'render' &&
-        item.valueRaw &&
-        !React.isValidElement(item.valueRaw)
-      ) {
-        data.push(item.valueRaw)
+    itemToRow &&
+      itemToRow(row, index).forEach((item, i) => {
+        const type = item.type
 
         if (
-          headers[i] !== undefined &&
-          headersNew.includes(headers[i]) === false
+          (type === 'text' || type === 'number') &&
+          !React.isValidElement(item.value)
         ) {
-          headersNew.push(headers[i])
+          data.push(item.value)
+
+          if (headers[i] !== undefined && !headersNew.includes(headers[i])) {
+            headersNew.push(headers[i])
+          }
+        } else if (
+          type === 'render' &&
+          item.valueRaw &&
+          !React.isValidElement(item.valueRaw)
+        ) {
+          data.push(item.valueRaw)
+
+          if (
+            headers[i] !== undefined &&
+            headersNew.includes(headers[i]) === false
+          ) {
+            headersNew.push(headers[i])
+          }
         }
-      }
-    })
+      })
 
     return data
   })
 
   return { rows: exportRows, headers: headersNew, topHeadCells }
 }
-
 
 export function descendingComparator<DataType>(
   a: DataType,
@@ -79,7 +86,7 @@ export function getComparator<DataType>(order: string, orderBy: string) {
     ? (a: DataType, b: DataType) =>
         descendingComparator<DataType>(a, b, orderBy)
     : (a: DataType, b: DataType) =>
-      -descendingComparator<DataType>(a, b, orderBy)
+        -descendingComparator<DataType>(a, b, orderBy)
 }
 
 export function stableSort(array: any[], comparator: any) {

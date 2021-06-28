@@ -1,10 +1,7 @@
-import * as React from 'react'
-import styles from './styles.module.css'
+import XTable from './XTable'
+import TableEmpty from './components/slots/TableEmpty'
+import TableHead from './components/slots/TableHead'
+import TablePagination from './components/slots/TablePagination'
 
-interface Props {
-  text: string
-}
-
-export const ExampleComponent = ({ text }: Props) => {
-  return <div className={styles.test}>Example Component: {text}</div>
-}
+export { TableEmpty, TablePagination, TableHead }
+export default XTable

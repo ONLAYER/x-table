@@ -10,13 +10,15 @@ import { TableClassKey } from '@material-ui/core/Table/Table'
 import { TableRowClassKey } from '@material-ui/core/TableRow/TableRow'
 // eslint-disable-next-line no-unused-vars
 import { TableContainerClassKey } from '@material-ui/core/TableContainer'
-export type HeadCell = {
-  numeric?: boolean
-  id: string
-  disablePadding?: boolean
-  label: string
-  colSpan?: number
-}
+export type HeadCell =
+  | string[]
+  | {
+      numeric?: boolean
+      id: string
+      disablePadding?: boolean
+      label: string
+      colSpan?: number
+    }
 
 export type XTableRef = {
   getSelected: () => SelectedType[]
@@ -66,7 +68,7 @@ export type CustomRowRendererParams<DataType> = Pick<
   key: string | number
   index: number
   onSelect: OnSelectCallback<DataType>
-  itemToRow: ItemToRowCallback<DataType>
+  itemToRow: XTableProps<DataType>['itemToRow']
   handleClick?: HandleClickCallback
   isItemSelected: boolean
 }
@@ -81,28 +83,28 @@ type ClassMap<Keys extends string> = {
 }
 
 type Classes = {
-  tablePagination: ClassMap<TablePaginationClassKey>
-  tableBody: ClassMap<TableBodyClassKey>
-  tableHead: ClassMap<TableHeadClassKey>
-  table: ClassMap<TableClassKey>
-  tableRow: ClassMap<TableRowClassKey>
-  tableContainer: ClassMap<TableContainerClassKey>
+  tablePagination?: ClassMap<TablePaginationClassKey>
+  tableBody?: ClassMap<TableBodyClassKey>
+  tableHead?: ClassMap<TableHeadClassKey>
+  table?: ClassMap<TableClassKey>
+  tableRow?: ClassMap<TableRowClassKey>
+  tableContainer?: ClassMap<TableContainerClassKey>
 }
 
 export type XTableProps<DataType extends Object> = {
   data: DataType[]
-  classes: Classes
+  classes?: Classes
   headCells: HeadCell[]
-  itemToRow: ItemToRowCallback<DataType>
+  itemToRow?: ItemToRowCallback<DataType>
   checkRowIsSelectable?: CheckRowIsSelectableCallback<DataType>
   uniqueKey?: string
   customRowRenderer?: CustomRowRendererCallback<DataType>
   sortOperationAllowedColumns?: string[]
   handleClick?: HandleClickCallback
   loading?: boolean
-  styled: any
+  styled?: any
   defaultRowsPerPage?: number
-  shouldPrintExcel: boolean
+  shouldPrintExcel?: boolean
   pagination?: boolean
   topHeadCells?: HeadCell[]
   defaultOrderDirection?: 'desc' | 'asc'
@@ -111,7 +113,7 @@ export type XTableProps<DataType extends Object> = {
   emptyErrorMessage?: string
   allRowsSelectable?: boolean
   onSelectedChange?: OnSelectedChangeCallback
-  rowsPerPageOptions: number[]
+  rowsPerPageOptions?: number[]
   totalRowsLength?: number
-  dense: false
+  dense?: false
 }

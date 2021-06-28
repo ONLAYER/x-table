@@ -1,10 +1,8 @@
-import React from 'react'
-
-import { ExampleComponent } from '@pcihecklist/react-x-table'
-import '@pcihecklist/react-x-table/dist/index.css'
+import XTable from "../../src/XTable";
+import React from "react";
 
 const App = () => {
-  return <ExampleComponent text="Create React Library Example 😄" />
+  return <XTable  data={[{id: 1}]} />
 }
 
 export default App
