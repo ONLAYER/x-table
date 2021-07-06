@@ -19,6 +19,8 @@ import type {
   // eslint-disable-next-line no-unused-vars
   CustomRowRendererParams,
   // eslint-disable-next-line no-unused-vars
+  HeadCellObject,
+  // eslint-disable-next-line no-unused-vars
   SelectedType,
   // eslint-disable-next-line no-unused-vars
   XTableProps,
@@ -37,7 +39,7 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
   (props, ref) => {
     const {
       data,
-      headCells,
+      headCells: headCellsBasic,
       handleClick,
       itemToRow,
       shouldPrintExcel = false,
@@ -60,6 +62,38 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
       totalRowsLength,
       classes = {}
     } = props
+
+    // this memo will convert that headCell  as passed array of strings to  array of objects
+    const headCells = useMemo<HeadCellObject[]>(() => {
+      const firstCell = headCellsBasic[0]
+
+      // if firstcell is not defined we cannot determine
+      // whether the headcells are array of object or array of string
+      // so we return an empty array,
+      // this also can be happen for some reason user sends the  first element of object as undefined
+      if (typeof firstCell === 'undefined') {
+        return []
+      }
+
+      // our first cell is object therefore we assume we are given array of objects
+      if (typeof firstCell === 'object') {
+        return headCellsBasic as unknown as HeadCellObject[]
+      }
+
+      if (typeof firstCell === 'string') {
+        return headCellsBasic.map<HeadCellObject>((item: string) => {
+          return {
+            id: item,
+            numeric: item.toLocaleLowerCase().includes('id'),
+            label: item
+          }
+        })
+      }
+
+      throw new Error(
+        `headCells prop accepts array of objects or array of strings, XTable looks for  first element of headCells, and your first elements type is ${typeof firstCell}`
+      )
+    }, [headCellsBasic])
 
     // const classes = useStyles()
     const [order, setOrder] = useState(defaultOrderDirection)
@@ -187,14 +221,20 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
       setPage(0)
     }
 
-    const isSelected = (id: SelectedType) => selected.indexOf(id) !== -1
-    const onSelect = useCallback((row, selected) => {
-      setSelected((prevState) =>
-        selected
-          ? prevState.filter((item) => item !== row[uniqueKey])
-          : [...prevState, row[uniqueKey]]
-      )
-    }, [])
+    const isSelected = useCallback(
+      (id: SelectedType) => selected.indexOf(id) !== -1,
+      [selected]
+    )
+    const onSelect = useCallback(
+      (row, selected) => {
+        setSelected((prevState) =>
+          selected
+            ? prevState.filter((item) => item !== row[uniqueKey])
+            : [...prevState, row[uniqueKey]]
+        )
+      },
+      [setSelected]
+    )
 
     //  x-table support 2 variants of row rendering
     // one is rendering by itemToRow props which is rendering is handled by TableRow Component based on how user desired
@@ -230,16 +270,17 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
         styled,
         onSelect,
         customRowRenderer,
-        selected,
+        isSelected,
         checkRowIsSelectable
       ]
     )
 
-    const emptyRows =
-      rowsPerPage > (rows?.length || []) ? 5 - rows?.length : null
-    const rowsSorted = orderBy
-      ? stableSort(rows, getComparator<Object>(order, orderBy))
-      : rows
+    const emptyRows = rowsPerPage > rowsLength ? 5 - rowsLength : null
+    const rowsSorted = useMemo<Object[]>(() => {
+      return orderBy
+        ? stableSort(rows, getComparator<Object>(order, orderBy))
+        : rows
+    }, [orderBy, order, rows])
 
     // in some tables only some rows should be selectable
     // such as onboarding completed table, so in  order to achieve that

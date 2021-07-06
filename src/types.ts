@@ -10,15 +10,14 @@ import { TableClassKey } from '@material-ui/core/Table/Table'
 import { TableRowClassKey } from '@material-ui/core/TableRow/TableRow'
 // eslint-disable-next-line no-unused-vars
 import { TableContainerClassKey } from '@material-ui/core/TableContainer'
-export type HeadCell =
-  | string[]
-  | {
-      numeric?: boolean
-      id: string
-      disablePadding?: boolean
-      label: string
-      colSpan?: number
-    }
+export type HeadCellObject = {
+  numeric?: boolean
+  id: string
+  disablePadding?: boolean
+  label: string
+  colSpan?: number
+}
+export type HeadCell = string | HeadCellObject
 
 export type XTableRef = {
   getSelected: () => SelectedType[]
