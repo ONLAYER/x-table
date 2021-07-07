@@ -6,11 +6,9 @@ import makeStyles from '@material-ui/core/styles/makeStyles'
 // eslint-disable-next-line no-unused-vars
 import type { ItemToRow, TableRowProps } from '../types'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   firstCell: {
     position: 'sticky',
-    background: `${theme.palette.primary.dark}`,
-    borderRight: `1px solid ${theme.palette.secondary.dark} !important`,
     left: 0,
     padding: 5,
     zIndex: 1
@@ -58,7 +56,7 @@ const TableRowItem = <DataType extends Object>({
         </TableCell>
       ) : null}
 
-      {renderRow<DataType>(itemToRow(rest as DataType, index), classes)}
+      {itemToRow && renderRow<DataType>(itemToRow(rest as DataType, index), classes)}
 
       {children}
     </TableRow>

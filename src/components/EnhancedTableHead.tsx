@@ -6,25 +6,23 @@ import TableSortLabel from '@material-ui/core/TableSortLabel'
 import React from 'react'
 import makeStyles from '@material-ui/core/styles/makeStyles'
 // eslint-disable-next-line no-unused-vars
-import { HeadCell } from '../types'
+import { HeadCellObject } from '../types'
 
 type Props = {
-  headCells: HeadCell[]
+  headCells: HeadCellObject[]
   sortableIndexes: number[]
   order: 'desc' | 'asc'
   orderBy?: string
   numSelected: number
-  uniqueKey: string
+  uniqueKey?: string
   rowCount: number
   onSelectAllClick: (e: any) => void
   onRequestSort: (e: any, property: string) => void
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   firstCell: {
     position: 'sticky',
-    background: `${theme.palette.primary.dark}`,
-    borderRight: `1px solid ${theme.palette.secondary.dark} !important`,
     left: 0,
     padding: 5,
     zIndex: 1

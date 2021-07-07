@@ -1,3 +1,4 @@
+import React from 'react'
 // @ts-ignore
 // eslint-disable-next-line no-unused-vars
 import type { XTableProps } from '../../types'
@@ -7,18 +8,18 @@ type RenderProps<ObjectType> = {
   loading: XTableProps<ObjectType>['loading']
 }
 
-type TablePaginationRenderProps<ObjectType> = (
+export type TableEmptyRenderProps<ObjectType> = (
   renderProps: RenderProps<ObjectType>
 ) => JSX.Element | JSX.Element[]
 
 type Props<ObjectType extends Object> = {
-  children: TablePaginationRenderProps<ObjectType>
+  children: TableEmptyRenderProps<ObjectType>
 }
 
 const TableEmpty = <ObjectType extends Object>({
   children
 }: Props<ObjectType>) => {
-  return children
+  return <React.Fragment>{children}</React.Fragment>
 }
 
 export default TableEmpty

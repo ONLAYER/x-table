@@ -1,4 +1,6 @@
 // eslint-disable-next-line no-unused-vars
+import { ReactNode } from 'react'
+// eslint-disable-next-line no-unused-vars
 import type { TablePaginationClassKey } from '@material-ui/core/TablePagination'
 // eslint-disable-next-line no-unused-vars
 import { TableBodyClassKey } from '@material-ui/core/TableBody/TableBody'
@@ -10,6 +12,19 @@ import { TableClassKey } from '@material-ui/core/Table/Table'
 import { TableRowClassKey } from '@material-ui/core/TableRow/TableRow'
 // eslint-disable-next-line no-unused-vars
 import { TableContainerClassKey } from '@material-ui/core/TableContainer'
+// eslint-disable-next-line no-unused-vars
+import { TableEmptyRenderProps } from './components/slots/TableEmpty'
+// eslint-disable-next-line no-unused-vars
+import { TableHeadRenderProps } from './components/slots/TableHead'
+// eslint-disable-next-line no-unused-vars
+import { TablePaginationRenderProps } from './components/slots/TablePagination'
+
+export type Slots<DataType> = {
+  TablePagination?: TablePaginationRenderProps
+  TableHead?: TableHeadRenderProps<DataType>
+  TableEmpty?: TableEmptyRenderProps<DataType>
+}
+
 export type HeadCellObject = {
   numeric?: boolean
   id: string
@@ -87,6 +102,8 @@ type Classes = {
   tableHead?: ClassMap<TableHeadClassKey>
   table?: ClassMap<TableClassKey>
   tableRow?: ClassMap<TableRowClassKey>
+  tableEmptyRow?: ClassMap<TableRowClassKey>
+
   tableContainer?: ClassMap<TableContainerClassKey>
 }
 
@@ -105,7 +122,7 @@ export type XTableProps<DataType extends Object> = {
   defaultRowsPerPage?: number
   shouldPrintExcel?: boolean
   pagination?: boolean
-  topHeadCells?: HeadCell[]
+  topHeadCells?: HeadCellObject[]
   defaultOrderDirection?: 'desc' | 'asc'
   defaultOrderField?: string
   showEmptyRows?: boolean
@@ -115,4 +132,5 @@ export type XTableProps<DataType extends Object> = {
   rowsPerPageOptions?: number[]
   totalRowsLength?: number
   dense?: false
+  children?: ReactNode | ReactNode[]
 }

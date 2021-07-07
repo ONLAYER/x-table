@@ -2,7 +2,7 @@ import type {
   // eslint-disable-next-line no-unused-vars
   ExportRowMapperCallback,
   // eslint-disable-next-line no-unused-vars
-  HeadCell,
+  HeadCellObject,
   // eslint-disable-next-line no-unused-vars
   XTableProps
 } from './types'
@@ -11,12 +11,12 @@ import React from 'react'
 type ExportResponse = {
   rows: any[]
   headers: string[]
-  topHeadCells?: HeadCell[]
+  topHeadCells?: HeadCellObject[]
 }
 
 export function prepareDataToExport<DataType>(
-  headCells: HeadCell[],
-  topHeadCells: HeadCell[],
+  headCells: HeadCellObject[],
+  topHeadCells: HeadCellObject[],
   rows: DataType[],
   itemToRow: XTableProps<DataType>['itemToRow'],
   exportRowMapper?: ExportRowMapperCallback<DataType>

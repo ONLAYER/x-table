@@ -25,13 +25,16 @@ import type {
   // eslint-disable-next-line no-unused-vars
   XTableProps,
   // eslint-disable-next-line no-unused-vars
-  XTableRef
+  XTableRef,
+  // eslint-disable-next-line no-unused-vars
+  Slots
 } from './types'
 
 import { getComparator, prepareDataToExport, stableSort } from './utils'
 import exportToExcel from './exportToExcel'
 import TableTopHead from './components/TableTopHead'
 import EnhancedTableHead from './components/EnhancedTableHead'
+import useSlots from './useSlots'
 
 const rowsOptions = [5, 10, 25]
 
@@ -44,13 +47,13 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
       itemToRow,
       shouldPrintExcel = false,
       checkRowIsSelectable,
-      uniqueKey = 'id',
+      uniqueKey = undefined,
       customRowRenderer,
       defaultOrderDirection = 'desc',
       defaultOrderField = undefined,
       styled = false,
       sortOperationAllowedColumns,
-      loading = undefined,
+      loading = false,
       topHeadCells = undefined,
       defaultRowsPerPage = 5,
       pagination = true,
@@ -60,8 +63,11 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
       rowsPerPageOptions = rowsOptions,
       dense = false,
       totalRowsLength,
-      classes = {}
+      classes = {},
+      children
     } = props
+
+    const slots = useSlots({ children }) as Slots<Object>
 
     // this memo will convert that headCell  as passed array of strings to  array of objects
     const headCells = useMemo<HeadCellObject[]>(() => {
@@ -190,7 +196,7 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
 
     const handleSelectAllClick = useCallback(
       (event) => {
-        if (event.target.checked) {
+        if (event.target.checked && uniqueKey) {
           return setSelected(
             rows
               .filter((row, i) => {
@@ -210,16 +216,24 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
 
     // @ts-ignore
     // todo: add appropriate definitions
-    const handleChangePage = (_, newPage) => {
-      setPage(newPage)
-    }
+    const handleChangePage = (_, newPage) => handleChangePageCallback(newPage)
+    const handleChangePageCallback = useCallback((page: number) => {
+      setPage(page)
+    }, [])
 
     // @ts-ignore
     // todo: add appropriate definitions
     const handleChangeRowsPerPage = (event) => {
-      setRowsPerPage(parseInt(event.target.value, 10))
-      setPage(0)
+      handleChangeRowsPerPageCallback(parseInt(event.target.value, 10))
     }
+
+    const handleChangeRowsPerPageCallback = useCallback(
+      (rowsPerPage: number) => {
+        setRowsPerPage(rowsPerPage)
+        setPage(0)
+      },
+      []
+    )
 
     const isSelected = useCallback(
       (id: SelectedType) => selected.indexOf(id) !== -1,
@@ -227,11 +241,13 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
     )
     const onSelect = useCallback(
       (row, selected) => {
-        setSelected((prevState) =>
-          selected
-            ? prevState.filter((item) => item !== row[uniqueKey])
-            : [...prevState, row[uniqueKey]]
-        )
+        if (uniqueKey) {
+          setSelected((prevState) =>
+            selected
+              ? prevState.filter((item) => item !== row[uniqueKey])
+              : [...prevState, row[uniqueKey]]
+          )
+        }
       },
       [setSelected]
     )
@@ -308,31 +324,50 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
           >
             {topHeadCells ? <TableTopHead data={topHeadCells} /> : null}
 
-            <EnhancedTableHead
-              headCells={headCells}
-              numSelected={selected.length}
-              order={order}
-              sortableIndexes={sortableColumns}
-              orderBy={orderBy}
-              uniqueKey={uniqueKey}
-              onSelectAllClick={handleSelectAllClick}
-              onRequestSort={handleRequestSort}
-              rowCount={selecteableRowCount}
-            />
+            {slots.TableHead ? (
+              slots.TableHead({
+                order,
+                orderBy,
+                headCells,
+                handleRequestSort,
+                handleSelectAllClick,
+                selectableRowCount: selecteableRowCount,
+                sortableColumns,
+                selectedCount: selected.length,
+                uniqueKey,
+                rowCount: rowsLength
+              })
+            ) : (
+              <EnhancedTableHead
+                headCells={headCells}
+                numSelected={selected.length}
+                order={order}
+                sortableIndexes={sortableColumns}
+                orderBy={orderBy}
+                uniqueKey={uniqueKey}
+                onSelectAllClick={handleSelectAllClick}
+                onRequestSort={handleRequestSort}
+                rowCount={selecteableRowCount}
+              />
+            )}
             <TableBody classes={classes.tableBody}>
               {rowsSorted &&
                 rowsSorted
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map(rowRenderer)}
 
-              {loading === false && rows.length === 0 ? (
-                <TableRow classes={classes.tableRow}>
-                  <TableCell align='center' colSpan={headCells.length + 1}>
-                    <Typography variant='subtitle1'>
-                      {emptyErrorMessage}
-                    </Typography>
-                  </TableCell>
-                </TableRow>
+              {!loading && rowsLength === 0 ? (
+                slots.TableEmpty ? (
+                  slots.TableEmpty({ emptyErrorMessage, loading })
+                ) : (
+                  <TableRow classes={classes.tableEmptyRow}>
+                    <TableCell align='center' colSpan={headCells.length + 1}>
+                      <Typography variant='subtitle1'>
+                        {emptyErrorMessage}
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                )
               ) : null}
 
               {showEmptyRows && emptyRows && emptyRows > 0 && (
@@ -347,15 +382,26 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
           </Table>
         </TableContainer>
         {pagination && (rowsLength > rowsPerPage || rowsLength > 5) ? (
-          <TablePagination
-            rowsPerPageOptions={rowsPerPageOptions}
-            component='div'
-            count={rowsLength}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onChangePage={handleChangePage}
-            onChangeRowsPerPage={handleChangeRowsPerPage}
-          />
+          slots.TablePagination ? (
+            slots.TablePagination({
+              handleChangePage: handleChangePageCallback,
+              handleChangeRowsPerPage: handleChangeRowsPerPageCallback,
+              page,
+              rowsPerPageOptions,
+              rowsCount: rowsLength,
+              rowsPerPage
+            })
+          ) : (
+            <TablePagination
+              rowsPerPageOptions={rowsPerPageOptions}
+              component='div'
+              count={rowsLength}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onChangePage={handleChangePage}
+              onChangeRowsPerPage={handleChangeRowsPerPage}
+            />
+          )
         ) : null}
       </React.Fragment>
     )

@@ -1,26 +1,29 @@
+import React from 'react'
 // @ts-ignore
 // eslint-disable-next-line no-unused-vars
 import type { XTableProps } from '../../types'
 
-type RenderProps<ObjectType> = {
-  rowsPerPageOptions: XTableProps<ObjectType>['rowsPerPageOptions']
+type RenderProps = {
+  rowsPerPageOptions: number[]
   page: number
   handleChangePage: (page: number) => void
   handleChangeRowsPerPage: (rowsPerPage: number) => void
+  rowsCount: number
+  rowsPerPage: number
 }
 
-type TablePaginationRenderProps<ObjectType> = (
-  renderProps: RenderProps<ObjectType>
+export type TablePaginationRenderProps = (
+  renderProps: RenderProps
 ) => JSX.Element | JSX.Element[]
 
-type Props<ObjectType extends Object> = {
-  children: TablePaginationRenderProps<ObjectType>
+type Props = {
+  children: TablePaginationRenderProps
 }
 
-const TablePagination = <ObjectType extends Object>({
+const TablePagination =({
   children
-}: Props<ObjectType>) => {
-  return children
+}: Props) => {
+  return <React.Fragment>{children}</React.Fragment>
 }
 
 export default TablePagination

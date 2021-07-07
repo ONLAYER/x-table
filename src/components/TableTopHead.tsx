@@ -4,11 +4,11 @@ import TableCell from '@material-ui/core/TableCell'
 
 import TableHead from '@material-ui/core/TableHead'
 // eslint-disable-next-line no-unused-vars
-import type { HeadCell } from '../types'
+import type { HeadCellObject } from '../types'
 import makeStyles from '@material-ui/core/styles/makeStyles'
 
 type Props = {
-  data: HeadCell[]
+  data: HeadCellObject[]
 }
 
 const useStyles = makeStyles(() => ({
