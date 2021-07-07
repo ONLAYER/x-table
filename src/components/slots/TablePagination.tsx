@@ -3,7 +3,7 @@ import React from 'react'
 // eslint-disable-next-line no-unused-vars
 import type { XTableProps } from '../../types'
 
-type RenderProps = {
+export type PaginationRenderProps = {
   rowsPerPageOptions: number[]
   page: number
   handleChangePage: (page: number) => void
@@ -13,7 +13,7 @@ type RenderProps = {
 }
 
 export type TablePaginationRenderProps = (
-  renderProps: RenderProps
+  renderProps: PaginationRenderProps
 ) => JSX.Element | JSX.Element[]
 
 type Props = {
