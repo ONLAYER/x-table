@@ -1,7 +1,12 @@
 // eslint-disable-next-line no-unused-vars
 import React, { ChangeEvent } from 'react'
 import TablePaginationBase from '@material-ui/core/TablePagination'
+// eslint-disable-next-line no-unused-vars
 import { PaginationRenderProps } from './slots/TablePagination'
+
+type Props = PaginationRenderProps & {
+  onPageChange: (page: number, rowsPerPage: number) => void
+}
 
 const BackendPaginatedTablePagination = ({
   handleChangePage,
@@ -9,14 +14,20 @@ const BackendPaginatedTablePagination = ({
   handleChangeRowsPerPage,
   rowsCount,
   rowsPerPageOptions,
+  onPageChange,
   page
-}: PaginationRenderProps) => {
+}: Props) => {
   const onChange = (_: any, page: number) => {
     handleChangePage(page)
+
+    onPageChange(page, rowsPerPage)
   }
 
-  const onRowsPerPageChange = (event: ChangeEvent<HTMLInputElement>) => {
-    handleChangeRowsPerPage(parseInt(event.target.value, 10))
+  const onRowsPerPageChanged = (event: ChangeEvent<HTMLInputElement>) => {
+    const rowsPerPage = parseInt(event.target.value, 10)
+    handleChangeRowsPerPage(rowsPerPage)
+
+    onPageChange(page, rowsPerPage)
   }
 
   return (
@@ -27,7 +38,7 @@ const BackendPaginatedTablePagination = ({
       rowsPerPage={rowsPerPage}
       page={page}
       onChangePage={onChange}
-      onChangeRowsPerPage={onRowsPerPageChange}
+      onChangeRowsPerPage={onRowsPerPageChanged}
     />
   )
 }

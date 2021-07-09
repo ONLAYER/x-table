@@ -310,6 +310,14 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
         : rows.filter((row, i) => checkRowIsSelectable(row, i)).length
     }, [checkRowIsSelectable, rows])
 
+    const renderedRows = useMemo(
+      () =>
+        rowsSorted &&
+        rowsSorted
+          .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+          .map(rowRenderer),
+      [rowsSorted, page, rowsPerPage, rowRenderer]
+    )
     return (
       <React.Fragment>
         {loading ? (
@@ -351,10 +359,7 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
               />
             )}
             <TableBody classes={classes.tableBody}>
-              {rowsSorted &&
-                rowsSorted
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map(rowRenderer)}
+              {renderedRows}
 
               {!loading && rowsLength === 0 ? (
                 slots.TableEmpty ? (
