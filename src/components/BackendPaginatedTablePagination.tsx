@@ -20,6 +20,7 @@ const BackendPaginatedTablePagination = ({
   const onChange = (_: any, page: number) => {
     handleChangePage(page)
 
+    console.log("page", page, rowsPerPage)
     onPageChange(page, rowsPerPage)
   }
 

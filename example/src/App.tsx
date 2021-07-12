@@ -1,20 +1,13 @@
-import React, { ChangeEvent, useCallback } from "react";
-import XTable, { TableEmpty, TablePagination } from "@pcihecklist/react-x-table"
+import React, { useCallback } from "react";
 import { ItemToRow } from "../../dist/types"
-import TableCell from "@material-ui/core/TableCell";
-import { Typography } from "@material-ui/core";
-import TableRow from "@material-ui/core/TableRow";
-import TablePaginationBase from "@material-ui/core/TablePagination";
+
+import {BackendPaginatedTable, DataParameters}  from "@pcihecklist/react-x-table";
 
 interface DataType extends Object{
   id: number
   name: string
 }
 const data : DataType[] =[
-  {
-    id: 1,
-    name: 'test9'
-  },
   {
     id: 2,
     name: 'test8'
@@ -66,45 +59,13 @@ const App = () => {
     ]
   }, [])
 
+
+  const fetchCallback = useCallback(({page, rowsPerPage, sortDirection, sortField}: DataParameters) => {
+    console.log(page, rowsPerPage, sortField, sortDirection)
+
+  }, [])
   // @ts-ignore
-  return <XTable itemToRow={itemToRow} data={data} headCells={headCells} >
-     <TableEmpty>
-
-       {({emptyErrorMessage}) => {
-         return <TableRow>
-           <TableCell align='center' colSpan={3}>
-             <Typography variant='subtitle1'>
-               {emptyErrorMessage}
-             </Typography>
-           </TableCell>
-         </TableRow>
-       }}
-     </TableEmpty>
-
-    <TablePagination>
-      { ({handleChangePage, rowsPerPage, handleChangeRowsPerPage, rowsCount, rowsPerPageOptions, page}) => {
-
-        const onChange = (_: any, page: number) => {
-          handleChangePage(page)
-        }
-
-
-        const onRowsPerPageChange = (event: ChangeEvent<HTMLInputElement>) => {
-          handleChangeRowsPerPage(parseInt(event.target.value, 10))
-        }
-
-        return   <TablePaginationBase
-          rowsPerPageOptions={rowsPerPageOptions as number[]}
-          component='div'
-          count={rowsCount}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onChangePage={onChange}
-          onChangeRowsPerPage={onRowsPerPageChange}
-        />
-      } }
-    </TablePagination>
-    </XTable>
+  return <BackendPaginatedTable itemToRow={itemToRow} data={data} headCells={headCells}   fetch={fetchCallback}/>
 }
 
 export default App

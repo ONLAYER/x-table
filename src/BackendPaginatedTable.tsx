@@ -17,15 +17,15 @@ type FetchResponse<DataType> = {
   pagination: PaginationData
 }
 
-type Parameters = { 
-  page: number,
-  rowsPerPage: number,
-  sortField ?: string,
-  sortDirection ?: string
+export type DataParameters = {
+  page: number
+  rowsPerPage: number
+  sortField?: string
+  sortDirection?: string
 }
 
 type DataFetch<DataType> = (
-  parameters: Parameters
+  parameters: DataParameters
 ) => FetchResponse<DataType>
 
 type BackendPaginatedTableProps<DataType> = Omit<
@@ -41,30 +41,41 @@ const BackendPaginatedTable = <DataType extends Object>({
   data,
   children,
   onSortChange,
-  
   ...rest
 }: BackendPaginatedTableProps<DataType>) => {
-  const [parameters, setParameters] = useState<Parameters>({
+  const [parameters, setParameters] = useState<DataParameters>({
     page: rest.defaultPage || 0,
     sortField: rest.defaultOrderField,
     sortDirection: rest.defaultOrderDirection,
     rowsPerPage: rest.defaultRowsPerPage || 5
   })
-  
-  const onSortChangeCallback = useCallback((sortField: string, sortDirection: string) => {
-      setParameters( parameters => ({...parameters, sortField, sortDirection}))
-  }, [onSortChange])
 
-  const onPageChange = useCallback((page: number, rows: number)  => {
-      setParameters( parameters => ({...parameters, page, rows}))
+  const onSortChangeCallback = useCallback(
+    (sortField: string, sortDirection: string) => {
+      setParameters((parameters) => ({
+        ...parameters,
+        sortField,
+        sortDirection
+      }))
+    },
+    [onSortChange]
+  )
+
+  const onPageChange = useCallback((page: number, rows: number) => {
+    setParameters((parameters) => ({ ...parameters, page, rows }))
   }, [])
 
   useEffect(() => {
-    fetch( parameters)
+    fetch(parameters)
   }, [parameters])
 
+  console.log('here', parameters)
   return (
-    <XTable data={data && data.rows ? data.rows : []}  {...rest} onSortChange={onSortChangeCallback}/>
+    <XTable
+      data={data && data.rows ? data.rows : []}
+      {...rest}
+      onSortChange={onSortChangeCallback}
+    >
       {children}
       <TablePagination>
         {(props) => {
