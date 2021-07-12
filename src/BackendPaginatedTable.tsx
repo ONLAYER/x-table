@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useState, useEffect } from 'react'
 // eslint-disable-next-line no-unused-vars
 import { XTableProps } from './types'
 import XTable from './XTable'
@@ -16,9 +16,16 @@ type FetchResponse<DataType> = {
   rows: DataType[]
   pagination: PaginationData
 }
-type DataFetch<DataType> = (
+
+type Parameters = { 
   page: number,
-  rowsPerPage: number
+  rowsPerPage: number,
+  sortField ?: string,
+  sortDirection ?: string
+}
+
+type DataFetch<DataType> = (
+  parameters: Parameters
 ) => FetchResponse<DataType>
 
 type BackendPaginatedTableProps<DataType> = Omit<
@@ -33,16 +40,31 @@ const BackendPaginatedTable = <DataType extends Object>({
   fetch,
   data,
   children,
+  onSortChange,
+  
   ...rest
 }: BackendPaginatedTableProps<DataType>) => {
-  const onPageChange = useCallback(
-    (page: number, rowsPerPage: number) => {
-      fetch(page, rowsPerPage)
-    },
-    [fetch]
-  )
+  const [parameters, setParameters] = useState<Parameters>({
+    page: rest.defaultPage || 0,
+    sortField: rest.defaultOrderField,
+    sortDirection: rest.defaultOrderDirection,
+    rowsPerPage: rest.defaultRowsPerPage || 5
+  })
+  
+  const onSortChangeCallback = useCallback((sortField: string, sortDirection: string) => {
+      setParameters( parameters => ({...parameters, sortField, sortDirection}))
+  }, [onSortChange])
+
+  const onPageChange = useCallback((page: number, rows: number)  => {
+      setParameters( parameters => ({...parameters, page, rows}))
+  }, [])
+
+  useEffect(() => {
+    fetch( parameters)
+  }, [parameters])
+
   return (
-    <XTable data={data && data.rows ? data.rows : []} {...rest}>
+    <XTable data={data && data.rows ? data.rows : []}  {...rest} onSortChange={onSortChangeCallback}/>
       {children}
       <TablePagination>
         {(props) => {

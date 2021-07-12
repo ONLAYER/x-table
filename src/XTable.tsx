@@ -57,12 +57,14 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
       topHeadCells = undefined,
       defaultRowsPerPage = 5,
       pagination = true,
+      defaultPage = 0,
       showEmptyRows = true,
       emptyErrorMessage = 'noDataAvailableForThisTable',
       onSelectedChange,
       rowsPerPageOptions = rowsOptions,
       dense = false,
       totalRowsLength,
+      onSortChange,
       classes = {},
       children
     } = props
@@ -105,7 +107,7 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
     const [order, setOrder] = useState(defaultOrderDirection)
     const [orderBy, setOrderBy] = useState(defaultOrderField)
     const [selected, setSelected] = useState<SelectedType[]>([])
-    const [page, setPage] = useState(0)
+    const [page, setPage] = useState(defaultPage)
     const [rowsPerPage, setRowsPerPage] = useState(defaultRowsPerPage)
     const rows = data
     const rowsLength =
@@ -186,12 +188,21 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
 
     const handleRequestSort = useCallback(
       (_, property) => {
+
+        // for anyone who is considered because this might cause performance issues,
+        // this is fine. React uses batch to update multiple states, 
         setOrder((order) =>
           orderBy === property && order === 'asc' ? 'desc' : 'asc'
         )
         setOrderBy(property)
+
+
+        // notify the parent listener
+        if(onSortChange){
+          onSortChange(property, order)
+        }
       },
-      [orderBy]
+      [orderBy, onSortChange]
     )
 
     const handleSelectAllClick = useCallback(
