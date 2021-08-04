@@ -1,6 +1,6 @@
 {
   "name": "@pcihecklist/react-x-table",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Advanced react material table component which is used in pcichecklist panel",
   "author": "pcichecklist",
   "license": "MIT",
