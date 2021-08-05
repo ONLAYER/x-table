@@ -111,6 +111,11 @@ export type OnSortChangeCallback = (
   sortDirection: 'asc' | 'desc'
 ) => void | Promise<void>
 
+export type ClassNames = {
+  [key in keyof Classes]: string
+}
+
+
 export type XTableProps<DataType extends Object> = {
   data: DataType[]
   classes?: Classes
@@ -140,4 +145,6 @@ export type XTableProps<DataType extends Object> = {
   children?: ReactNode | ReactNode[]
   onSortChange?: OnSortChangeCallback
   isBackendPowered: boolean
+  classNames: ClassNames
 }
+

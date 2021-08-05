@@ -67,7 +67,8 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
       totalRowsLength,
       onSortChange,
       classes = {},
-      children
+      children,
+      classNames = {}
     } = props
 
     const slots = useSlots({ children }) as Slots<Object>
@@ -342,9 +343,10 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
         {loading ? (
           <LinearProgress className='my-5 p-3' color='secondary' />
         ) : null}
-        <TableContainer classes={classes.tableContainer}>
+        <TableContainer className={classNames.tableContainer} classes={classes.tableContainer}>
           <Table
             classes={classes.table}
+            className={classNames.table}
             aria-labelledby='tableTitle'
             size={dense ? 'small' : 'medium'}
             aria-label='enhanced table'
@@ -377,14 +379,14 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
                 rowCount={selecteableRowCount}
               />
             )}
-            <TableBody classes={classes.tableBody}>
+            <TableBody className={classNames.tableBody}  classes={classes.tableBody}>
               {renderedRows}
 
               {!loading && rowsLength === 0 ? (
                 slots.TableEmpty ? (
                   slots.TableEmpty({ emptyErrorMessage, loading })
                 ) : (
-                  <TableRow classes={classes.tableEmptyRow}>
+                  <TableRow className={classNames.tableEmptyRow}  classes={classes.tableEmptyRow}>
                     <TableCell align='center' colSpan={headCells.length + 1}>
                       <Typography variant='subtitle1'>
                         {emptyErrorMessage}
@@ -396,6 +398,7 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
 
               {showEmptyRows && emptyRows && emptyRows > 0 && (
                 <TableRow
+                  className={classNames.tableEmptyRow}
                   classes={classes.tableRow}
                   style={{ height: (dense ? 33 : 53) * emptyRows }}
                 >
