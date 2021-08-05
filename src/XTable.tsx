@@ -325,6 +325,7 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
         : rows.filter((row, i) => checkRowIsSelectable(row, i)).length
     }, [checkRowIsSelectable, rows])
 
+
     const renderedRows = useMemo(
       () =>
         rowsSorted &&

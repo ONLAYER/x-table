@@ -18,15 +18,15 @@ const BackendPaginatedTablePagination = ({
   page
 }: Props) => {
   const onChange = (_: any, page: number) => {
-    handleChangePage(page)
-    onPageChange(page, rowsPerPage)
+    handleChangePage(page + 1)
+    onPageChange(page + 1, rowsPerPage)
   }
 
   const onRowsPerPageChanged = (event: ChangeEvent<HTMLInputElement>) => {
     const rowsPerPage = parseInt(event.target.value, 10)
     handleChangeRowsPerPage(rowsPerPage)
 
-    onPageChange(page, rowsPerPage)
+    onPageChange(page + 1, rowsPerPage)
   }
 
 
@@ -36,7 +36,7 @@ const BackendPaginatedTablePagination = ({
       component='div'
       count={rowsCount}
       rowsPerPage={rowsPerPage}
-      page={page -1 < 0 ? 0 : page-1}
+      page={page - 1}
       onChangePage={onChange}
       onChangeRowsPerPage={onRowsPerPageChanged}
     />

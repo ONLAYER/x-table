@@ -73,7 +73,7 @@ const App = () => {
       }
     }).then(results => results.json())
       .then(data => {
-        setData(data)
+        setData(prevState => [...prevState, ...data])
         setLoading(false)
       } );
 

@@ -148,3 +148,22 @@ export type XTableProps<DataType extends Object> = {
   classNames: ClassNames
 }
 
+
+export type PaginationData = {
+  totalRowsCount: number
+  page?: number
+  next?: number
+  prev?: number
+}
+
+export type FetchResponse<DataType> = {
+  rows: DataType[]
+  pagination: PaginationData
+}
+
+export type DataParameters = {
+  page: number
+  rowsPerPage: number
+  sortField?: string
+  sortDirection?: string
+}

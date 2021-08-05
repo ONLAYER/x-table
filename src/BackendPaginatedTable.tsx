@@ -1,34 +1,17 @@
 import React, { useCallback, useState, useEffect } from 'react'
 // eslint-disable-next-line no-unused-vars
-import { XTableProps } from './types'
+import { DataParameters, FetchResponse, XTableProps } from "./types";
 import XTable from './XTable'
 import { TablePagination } from './index'
 import BackendPaginatedTablePagination from './components/BackendPaginatedTablePagination'
 
-type PaginationData = {
-  totalRowsCount: number
-  page?: number
-  next?: number
-  prev?: number
-}
 
-type FetchResponse<DataType> = {
-  rows: DataType[]
-  pagination: PaginationData
-}
-
-export type DataParameters = {
-  page: number
-  rowsPerPage: number
-  sortField?: string
-  sortDirection?: string
-}
 
 type DataFetch<DataType> = (
   parameters: DataParameters
 ) => FetchResponse<DataType> | any
 
-type BackendPaginatedTableProps<DataType> = Omit<
+export type BackendPaginatedTableProps<DataType> = Omit<
   XTableProps<DataType>,
   'data'
 > & {
