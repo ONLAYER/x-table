@@ -26,7 +26,7 @@ export type DataParameters = {
 
 type DataFetch<DataType> = (
   parameters: DataParameters
-) => FetchResponse<DataType>
+) => FetchResponse<DataType> | any
 
 type BackendPaginatedTableProps<DataType> = Omit<
   XTableProps<DataType>,
@@ -44,7 +44,7 @@ const BackendPaginatedTable = <DataType extends Object>({
   ...rest
 }: BackendPaginatedTableProps<DataType>) => {
   const [parameters, setParameters] = useState<DataParameters>({
-    page: rest.defaultPage || 0,
+    page: rest.defaultPage || 1,
     sortField: rest.defaultOrderField,
     sortDirection: rest.defaultOrderDirection,
     rowsPerPage: rest.defaultRowsPerPage || 5
@@ -52,6 +52,7 @@ const BackendPaginatedTable = <DataType extends Object>({
 
   const onSortChangeCallback = useCallback(
     (sortField: string, sortDirection: string) => {
+
       setParameters((parameters) => ({
         ...parameters,
         sortField,
@@ -69,12 +70,13 @@ const BackendPaginatedTable = <DataType extends Object>({
     fetch(parameters)
   }, [parameters])
 
-  console.log('here', parameters)
   return (
     <XTable
       data={data && data.rows ? data.rows : []}
+      totalRowsLength={data.pagination.totalRowsCount}
       {...rest}
       onSortChange={onSortChangeCallback}
+      isBackendPowered
     >
       {children}
       <TablePagination>

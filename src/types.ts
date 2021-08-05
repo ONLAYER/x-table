@@ -106,8 +106,10 @@ type Classes = {
   tableContainer?: ClassMap<TableContainerClassKey>
 }
 
-export type OnSortChangeCallback = (sortField: string, sortDirection: 'asc' | 'desc') => void | Promise<void>
-
+export type OnSortChangeCallback = (
+  sortField: string,
+  sortDirection: 'asc' | 'desc'
+) => void | Promise<void>
 
 export type XTableProps<DataType extends Object> = {
   data: DataType[]
@@ -124,7 +126,7 @@ export type XTableProps<DataType extends Object> = {
   defaultRowsPerPage?: number
   shouldPrintExcel?: boolean
   pagination?: boolean
-  defaultPage ?: number,
+  defaultPage?: number
   topHeadCells?: HeadCellObject[]
   defaultOrderDirection?: 'desc' | 'asc'
   defaultOrderField?: string
@@ -136,5 +138,6 @@ export type XTableProps<DataType extends Object> = {
   totalRowsLength?: number
   dense?: false
   children?: ReactNode | ReactNode[]
-  onSortChange ?: OnSortChangeCallback
+  onSortChange?: OnSortChangeCallback
+  isBackendPowered: boolean
 }

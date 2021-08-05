@@ -12,7 +12,7 @@ import TableContainer from '@material-ui/core/TableContainer'
 import TablePagination from '@material-ui/core/TablePagination'
 import TableRow from '@material-ui/core/TableRow'
 import TableRowItem from './components/TableRow'
-import { Typography } from '@material-ui/core'
+import Typography from '@material-ui/core/Typography'
 import LinearProgress from '@material-ui/core/LinearProgress'
 
 import type {
@@ -57,7 +57,8 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
       topHeadCells = undefined,
       defaultRowsPerPage = 5,
       pagination = true,
-      defaultPage = 0,
+      defaultPage = 1,
+      isBackendPowered = false,
       showEmptyRows = true,
       emptyErrorMessage = 'noDataAvailableForThisTable',
       onSelectedChange,
@@ -144,6 +145,7 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
       return columns
     }, [rows, sortOperationAllowedColumns])
 
+    console.log(sortableColumns, 'sortable columns')
     useEffect(() => {
       if (onSelectedChange) {
         onSelectedChange(selected)
@@ -188,21 +190,19 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
 
     const handleRequestSort = useCallback(
       (_, property) => {
-
-        // for anyone who is considered because this might cause performance issues,
-        // this is fine. React uses batch to update multiple states, 
-        setOrder((order) =>
+        const newOrder =
           orderBy === property && order === 'asc' ? 'desc' : 'asc'
-        )
+        // for anyone who is considered because this might cause performance issues,
+        // this is fine. React uses batch to update multiple states,
+        setOrder(newOrder)
         setOrderBy(property)
 
-
         // notify the parent listener
-        if(onSortChange){
-          onSortChange(property, order)
+        if (onSortChange) {
+          onSortChange(property, newOrder)
         }
       },
-      [orderBy, onSortChange]
+      [orderBy, order, onSortChange]
     )
 
     const handleSelectAllClick = useCallback(
@@ -303,11 +303,14 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
     )
 
     const emptyRows = rowsPerPage > rowsLength ? 5 - rowsLength : null
+
+    // here we check if this sort should be handled by backend
+    // isBackendPowered must be set true if we want to achieve this
     const rowsSorted = useMemo<Object[]>(() => {
-      return orderBy
+      return orderBy && !isBackendPowered
         ? stableSort(rows, getComparator<Object>(order, orderBy))
         : rows
-    }, [orderBy, order, rows])
+    }, [orderBy, order, rows, isBackendPowered])
 
     // in some tables only some rows should be selectable
     // such as onboarding completed table, so in  order to achieve that
@@ -325,10 +328,15 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
       () =>
         rowsSorted &&
         rowsSorted
-          .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+          .slice(
+            (page - 1) * rowsPerPage,
+            (page - 1) * rowsPerPage + rowsPerPage
+          )
           .map(rowRenderer),
       [rowsSorted, page, rowsPerPage, rowRenderer]
     )
+
+    console.log(slots, rowsLength, 'rows length', page)
     return (
       <React.Fragment>
         {loading ? (
@@ -397,7 +405,7 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
             </TableBody>
           </Table>
         </TableContainer>
-        {pagination && (rowsLength > rowsPerPage || rowsLength > 5) ? (
+        {pagination ? (
           slots.TablePagination ? (
             slots.TablePagination({
               handleChangePage: handleChangePageCallback,
@@ -413,7 +421,7 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
               component='div'
               count={rowsLength}
               rowsPerPage={rowsPerPage}
-              page={page}
+              page={page - 1 < 0 ? 0 : page - 1}
               onChangePage={handleChangePage}
               onChangeRowsPerPage={handleChangeRowsPerPage}
             />

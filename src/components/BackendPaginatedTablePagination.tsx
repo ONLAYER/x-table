@@ -19,8 +19,6 @@ const BackendPaginatedTablePagination = ({
 }: Props) => {
   const onChange = (_: any, page: number) => {
     handleChangePage(page)
-
-    console.log("page", page, rowsPerPage)
     onPageChange(page, rowsPerPage)
   }
 
@@ -31,13 +29,14 @@ const BackendPaginatedTablePagination = ({
     onPageChange(page, rowsPerPage)
   }
 
+
   return (
     <TablePaginationBase
       rowsPerPageOptions={rowsPerPageOptions as number[]}
       component='div'
       count={rowsCount}
       rowsPerPage={rowsPerPage}
-      page={page}
+      page={page -1 < 0 ? 0 : page-1}
       onChangePage={onChange}
       onChangeRowsPerPage={onRowsPerPageChanged}
     />
