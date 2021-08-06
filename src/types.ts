@@ -164,9 +164,10 @@ export type FetchResponse<DataType> = {
   pagination: PaginationData
 }
 
-export type DataParameters = {
+export type DataParameters<ExtraParameters = {}> = {
   page: number
   rowsPerPage: number
   sortField?: string
   sortDirection?: string
+
 }

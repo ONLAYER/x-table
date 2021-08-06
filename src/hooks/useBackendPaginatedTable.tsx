@@ -2,21 +2,31 @@ import { DataParameters, FetchResponse } from '../types'
 import BackendPaginatedTable, {
   BackendPaginatedTableProps
 } from '../BackendPaginatedTable'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 
-type DataFetch<DataType> = (
-  parameters: DataParameters
+type DataFetch<DataType, ExtraParameters = {}> = (
+  parameters: DataParameters<ExtraParameters>
 ) => FetchResponse<DataType>
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
 
-type Props<DataType> = Omit<BackendPaginatedTableProps<DataType>, 'fetch'> & {
+type Props<DataType, ExtraParameters> = Omit<
+  BackendPaginatedTableProps<DataType>,
+  'fetch'
+> & {
   fetch: DataFetch<DataType>
+  extraParameters?: ExtraParameters
+  useCache?: boolean
 }
 
-export default function useBackendPaginatedTable<DataType>({
+export default function useBackendPaginatedTable<
+  DataType,
+  ExtraParameters extends Object
+>({
   fetch: fetchCallback,
+  extraParameters,
+  useCache = true,
   ...rest
-}: Props<DataType>) {
+}: Props<DataType, ExtraParameters>) {
   const [data, setData] = useState<FetchResponse<DataType>>({
     rows: [],
     pagination: {
@@ -24,42 +34,74 @@ export default function useBackendPaginatedTable<DataType>({
     }
   })
   const [loading, setLoading] = useState(true)
+  const cache = useRef({})
+
+  const [state, setState] = useState({
+    page: rest.defaultPage || 1,
+    sortField: rest.defaultOrderField,
+    sortDirection: rest.defaultOrderDirection,
+    rowsPerPage: rest.defaultRowsPerPage || 5
+  })
 
   const fetch = useCallback(
     ({ page, rowsPerPage, sortDirection, sortField }) => {
-      setLoading(true)
-      const response = fetchCallback({
-        page,
-        rowsPerPage,
-        sortDirection,
-        sortField
-      })
-
-      if (!response?.pagination || !response?.rows) {
-        throw new Error(
-          `[fetchCallback] response must include both pagination and rows values, actual pagination: ${typeof response?.pagination}, actual rows: ${typeof response?.rows}`
-        )
-      }
-
-      if (
-        !response?.pagination.totalRowsCount &&
-        typeof !response?.pagination.totalRowsCount !== 'number'
-      ) {
-        throw new Error(
-          `[fetchCallback] response's pagination must include totalRowsCounts, none found.`
-        )
-      }
-
-      setData((prevState) => ({
-        ...prevState,
-        pagination: response.pagination,
-        rows: response.rows
-      }))
-
-      setLoading(false)
+      setState({ page, rowsPerPage, sortDirection, sortField })
     },
     [fetchCallback]
   )
+
+  const runFetch = useCallback(async () => {
+    setState(state)
+    const { page, rowsPerPage, sortDirection, sortField } = state
+
+    // if we decided to use cache and  we fetched this page previously, use the previous cache result
+    // otherwise continue to progress normally
+    if (useCache && typeof cache.current[page] !== 'undefined') {
+      return setData(cache.current[page])
+    }
+    setLoading(true)
+
+    const response = await fetchCallback({
+      page,
+      rowsPerPage,
+      sortDirection,
+      sortField,
+      ...extraParameters
+    })
+
+    if (!response?.pagination || !response?.rows) {
+      throw new Error(
+        `[fetchCallback] response must include both pagination and rows values, actual pagination: ${typeof response?.pagination}, actual rows: ${typeof response?.rows}`
+      )
+    }
+
+    if (
+      !response?.pagination.totalRowsCount &&
+      typeof !response?.pagination.totalRowsCount !== 'number'
+    ) {
+      throw new Error(
+        `[fetchCallback] response's pagination must include totalRowsCounts, none found.`
+      )
+    }
+
+    if (useCache === true) {
+      cache.current = {
+        ...cache.current,
+        [page]: response
+      }
+    }
+
+    setData((prevState) => ({
+      ...prevState,
+      pagination: response.pagination,
+      rows: response.rows
+    }))
+
+    setLoading(false)
+  }, [state, extraParameters])
+  useEffect(() => {
+    runFetch()
+  }, [runFetch])
 
   return (
     <BackendPaginatedTable
