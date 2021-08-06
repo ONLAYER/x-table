@@ -326,17 +326,20 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
         : rows.filter((row, i) => checkRowIsSelectable(row, i)).length
     }, [checkRowIsSelectable, rows])
 
-    const renderedRows = useMemo(
-      () =>
-        rowsSorted &&
-        rowsSorted
-          .slice(
+
+    // here we render rows
+    // in order to work properly with BackendPagiantedTable we had to make a small adjustment here
+    const renderedRows = useMemo(() => {
+      const rowsToMap = isBackendPowered
+        ? rowsSorted
+        : rowsSorted &&
+          rowsSorted.slice(
             (page - 1) * rowsPerPage,
             (page - 1) * rowsPerPage + rowsPerPage
           )
-          .map(rowRenderer),
-      [rowsSorted, page, rowsPerPage, rowRenderer]
-    )
+
+      return rowsToMap.map(rowRenderer)
+    }, [rowsSorted, page, rowsPerPage, isBackendPowered, rowRenderer])
 
     return (
       <React.Fragment>
