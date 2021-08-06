@@ -1,11 +1,9 @@
 import React, { useCallback, useState, useEffect } from 'react'
 // eslint-disable-next-line no-unused-vars
-import { DataParameters, FetchResponse, XTableProps } from "./types";
+import { DataParameters, FetchResponse, XTableProps } from './types'
 import XTable from './XTable'
 import { TablePagination } from './index'
 import BackendPaginatedTablePagination from './components/BackendPaginatedTablePagination'
-
-
 
 type DataFetch<DataType> = (
   parameters: DataParameters
@@ -35,7 +33,6 @@ const BackendPaginatedTable = <DataType extends Object>({
 
   const onSortChangeCallback = useCallback(
     (sortField: string, sortDirection: string) => {
-
       setParameters((parameters) => ({
         ...parameters,
         sortField,

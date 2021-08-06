@@ -68,7 +68,8 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
       onSortChange,
       classes = {},
       children,
-      classNames = {}
+      classNames = {},
+      styles = {}
     } = props
 
     const slots = useSlots({ children }) as Slots<Object>
@@ -325,7 +326,6 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
         : rows.filter((row, i) => checkRowIsSelectable(row, i)).length
     }, [checkRowIsSelectable, rows])
 
-
     const renderedRows = useMemo(
       () =>
         rowsSorted &&
@@ -338,14 +338,18 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
       [rowsSorted, page, rowsPerPage, rowRenderer]
     )
 
-    console.log(slots, rowsLength, 'rows length', page)
     return (
       <React.Fragment>
         {loading ? (
           <LinearProgress className='my-5 p-3' color='secondary' />
         ) : null}
-        <TableContainer className={classNames.tableContainer} classes={classes.tableContainer}>
+        <TableContainer
+          style={styles.tableContainer}
+          className={classNames.tableContainer}
+          classes={classes.tableContainer}
+        >
           <Table
+            style={styles.table}
             classes={classes.table}
             className={classNames.table}
             aria-labelledby='tableTitle'
@@ -380,14 +384,22 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
                 rowCount={selecteableRowCount}
               />
             )}
-            <TableBody className={classNames.tableBody}  classes={classes.tableBody}>
+            <TableBody
+              style={styles.tableBody}
+              className={classNames.tableBody}
+              classes={classes.tableBody}
+            >
               {renderedRows}
 
               {!loading && rowsLength === 0 ? (
                 slots.TableEmpty ? (
                   slots.TableEmpty({ emptyErrorMessage, loading })
                 ) : (
-                  <TableRow className={classNames.tableEmptyRow}  classes={classes.tableEmptyRow}>
+                  <TableRow
+                    style={styles.tableEmptyRow}
+                    className={classNames.tableEmptyRow}
+                    classes={classes.tableEmptyRow}
+                  >
                     <TableCell align='center' colSpan={headCells.length + 1}>
                       <Typography variant='subtitle1'>
                         {emptyErrorMessage}
@@ -400,7 +412,7 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
               {showEmptyRows && emptyRows && emptyRows > 0 && (
                 <TableRow
                   className={classNames.tableEmptyRow}
-                  classes={classes.tableRow}
+                  classes={classes.tableEmptyRow}
                   style={{ height: (dense ? 33 : 53) * emptyRows }}
                 >
                   <TableCell colSpan={headCells.length + 1} />
