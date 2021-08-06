@@ -99,9 +99,10 @@ export default function useBackendPaginatedTable<
 
     setLoading(false)
   }, [state, extraParameters])
+
   useEffect(() => {
     runFetch()
-  }, [runFetch])
+  }, [state, extraParameters])
 
   return (
     <BackendPaginatedTable
