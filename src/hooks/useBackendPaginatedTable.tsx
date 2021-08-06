@@ -7,13 +7,14 @@ import React, { useCallback, useState } from 'react'
 type DataFetch<DataType> = (
   parameters: DataParameters
 ) => FetchResponse<DataType>
+type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
 
-type Props<DataType> = BackendPaginatedTableProps<DataType> & {
-  fetchCallback: DataFetch<DataType>
+type Props<DataType> = Omit<BackendPaginatedTableProps<DataType>, 'fetch'> & {
+  fetch: DataFetch<DataType>
 }
 
 export default function useBackendPaginatedTable<DataType>({
-  fetchCallback,
+  fetch: fetchCallback,
   ...rest
 }: Props<DataType>) {
   const [data, setData] = useState<FetchResponse<DataType>>({
