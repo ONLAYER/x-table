@@ -56,8 +56,14 @@ export default function useBackendPaginatedTable<
 
     // if we decided to use cache and  we fetched this page previously, use the previous cache result
     // otherwise continue to progress normally
-    if (useCache && typeof cache.current[page] !== 'undefined') {
-      return setData(cache.current[page])
+    // we also make sure extraParameters has not been changed since the last time,
+    // if it has, we need to reload the page otherwise it won't be updated
+    if (
+      useCache &&
+      typeof cache.current[page] !== 'undefined' &&
+      cache.current[page].extraParameters !== extraParameters
+    ) {
+      return setData(cache.current[page].response)
     }
     setLoading(true)
 
@@ -87,7 +93,7 @@ export default function useBackendPaginatedTable<
     if (useCache === true) {
       cache.current = {
         ...cache.current,
-        [page]: response
+        [page]: { response: response, extraParameters }
       }
     }
 
