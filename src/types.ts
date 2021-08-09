@@ -92,7 +92,7 @@ export type CustomRowRendererCallback<DataType> = (
   params?: CustomRowRendererParams<DataType>
 ) => JSX.Element
 
-type ClassMap<Keys extends string> = {
+export type ClassMap<Keys extends string> = {
   [key in Keys]: string
 }
 

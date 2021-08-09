@@ -1,11 +1,16 @@
 // eslint-disable-next-line no-unused-vars
 import React, { ChangeEvent } from 'react'
-import TablePaginationBase from '@material-ui/core/TablePagination'
+import TablePaginationBase, {
+  TablePaginationClassKey
+} from '@material-ui/core/TablePagination'
 // eslint-disable-next-line no-unused-vars
 import { PaginationRenderProps } from './slots/TablePagination'
+import { ClassMap } from '../types'
 
 type Props = PaginationRenderProps & {
   onPageChange: (page: number, rowsPerPage: number) => void
+  className?: string
+  classes?: ClassMap<TablePaginationClassKey>
 }
 
 const BackendPaginatedTablePagination = ({
@@ -15,6 +20,8 @@ const BackendPaginatedTablePagination = ({
   rowsCount,
   rowsPerPageOptions,
   onPageChange,
+  classes,
+  className,
   page
 }: Props) => {
   const onChange = (_: any, page: number) => {
@@ -29,12 +36,13 @@ const BackendPaginatedTablePagination = ({
     onPageChange(page + 1, rowsPerPage)
   }
 
-
   return (
     <TablePaginationBase
       rowsPerPageOptions={rowsPerPageOptions as number[]}
       component='div'
       count={rowsCount}
+      classes={classes}
+      className={className}
       rowsPerPage={rowsPerPage}
       page={page - 1}
       onChangePage={onChange}

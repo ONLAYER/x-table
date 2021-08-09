@@ -436,6 +436,8 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
             })
           ) : (
             <TablePagination
+              className={classNames.tablePagination}
+              classes={classes.tablePagination}
               rowsPerPageOptions={rowsPerPageOptions}
               component='div'
               count={rowsLength}
