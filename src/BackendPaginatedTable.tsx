@@ -63,6 +63,8 @@ const BackendPaginatedTable = <DataType extends Object>({
         {(props) => {
           return (
             <BackendPaginatedTablePagination
+              classes={rest.classes?.tablePagination}
+              className={rest.classNames?.tablePagination}
               onPageChange={onPageChange}
               {...props}
             />
