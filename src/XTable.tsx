@@ -243,9 +243,9 @@ const XTable = React.forwardRef<XTableRef, XTableProps<Object>>(
     const handleChangeRowsPerPageCallback = useCallback(
       (rowsPerPage: number) => {
         setRowsPerPage(rowsPerPage)
-        setPage(0)
+        setPage(defaultPage)
       },
-      []
+      [defaultPage]
     )
 
     const isSelected = useCallback(
