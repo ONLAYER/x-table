@@ -9,7 +9,7 @@ type DataFetch<DataType> = (
   parameters: DataParameters
 ) => FetchResponse<DataType> | any
 
-export type BackendPaginatedTableProps<DataType> = Omit<
+export type BackendPaginatedTableProps<DataType extends Object> = Omit<
   XTableProps<DataType>,
   'data'
 > & {
@@ -43,7 +43,7 @@ const BackendPaginatedTable = <DataType extends Object>({
   )
 
   const onPageChange = useCallback((page: number, rows: number) => {
-    setParameters((parameters) => ({ ...parameters, page, rows }))
+    setParameters((parameters) => ({ ...parameters, page, rowsPerPage: rows }))
   }, [])
 
   useEffect(() => {
@@ -66,6 +66,7 @@ const BackendPaginatedTable = <DataType extends Object>({
               classes={rest.classes?.tablePagination}
               className={rest.classNames?.tablePagination}
               onPageChange={onPageChange}
+              defaultPage={rest.defaultPage}
               {...props}
             />
           )

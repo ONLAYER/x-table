@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import { ReactNode, CSSProperties } from 'react'
+import { ReactNode, CSSProperties, Ref } from "react";
 // eslint-disable-next-line no-unused-vars
 import type { TablePaginationClassKey } from '@material-ui/core/TablePagination'
 // eslint-disable-next-line no-unused-vars
@@ -149,7 +149,8 @@ export type XTableProps<DataType extends Object> = {
   onSortChange?: OnSortChangeCallback
   isBackendPowered?: boolean
   classNames?: ClassNames
-  styles?: Styles
+  styles?: Styles,
+  innerRef ?: Ref<XTableRef>
 }
 
 export type PaginationData = {

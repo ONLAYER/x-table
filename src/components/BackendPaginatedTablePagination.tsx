@@ -11,6 +11,7 @@ type Props = PaginationRenderProps & {
   onPageChange: (page: number, rowsPerPage: number) => void
   className?: string
   classes?: ClassMap<TablePaginationClassKey>
+  defaultPage?: number
 }
 
 const BackendPaginatedTablePagination = ({
@@ -22,6 +23,7 @@ const BackendPaginatedTablePagination = ({
   onPageChange,
   classes,
   className,
+  defaultPage = 1,
   page
 }: Props) => {
   const onChange = (_: any, page: number) => {
@@ -33,7 +35,7 @@ const BackendPaginatedTablePagination = ({
     const rowsPerPage = parseInt(event.target.value, 10)
     handleChangeRowsPerPage(rowsPerPage)
 
-    onPageChange(page + 1, rowsPerPage)
+    onPageChange(defaultPage, rowsPerPage)
   }
 
   return (

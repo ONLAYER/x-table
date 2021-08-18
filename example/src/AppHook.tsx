@@ -56,6 +56,7 @@ const AppHook = () => {
 
 
   const fetchCallback = useCallback(async ({ page, rowsPerPage, sortDirection, sortField }: DataParameters) => {
+    console.log(page, rowsPerPage, "log")
     // @ts-ignore
     const response = await fetch("https://610c27d566dd8f0017b76cea.mockapi.io/api/v1/articles?" + getQueryString({
       page: page,

@@ -1,8 +1,8 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { ItemToRow } from "../../dist/types";
 
 import { BackendPaginatedTable, DataParameters } from "@pcihecklist/react-x-table";
 import { makeStyles } from "@material-ui/core";
+import { ItemToRow, ItemToRowCallback } from "../../src/types";
 
 function getQueryString(params: Object): string {
   return Object
@@ -37,7 +37,7 @@ const App = () => {
   const classes = useStyles()
   const [data, setData] = useState<DataType[]>([]);
   const [loading, setLoading] = useState(true);
-  const itemToRow = useCallback((row: DataType): ItemToRow<DataType>[] => {
+  const itemToRow : ItemToRowCallback<DataType> = useCallback((row: DataType) : ItemToRow<DataType>[] => {
     return [
       {
         type: "number",
@@ -57,8 +57,10 @@ const App = () => {
   }, []);
 
 
+  console.log('heree')
   const fetchCallback = useCallback(({ page, rowsPerPage, sortDirection, sortField }: DataParameters) => {
     setLoading(true)
+    console.log(page, rowsPerPage, "log")
     // @ts-ignore
     fetch("https://610c27d566dd8f0017b76cea.mockapi.io/api/v1/articles?" + getQueryString({
       page: page,
@@ -79,7 +81,6 @@ const App = () => {
 
   }, []);
 
-  console.log(data);
 
   const dataObject = useMemo(() => ({
     rows: data,
