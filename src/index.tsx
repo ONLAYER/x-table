@@ -5,6 +5,7 @@ import TablePagination from './components/slots/TablePagination'
 import BackendPaginatedTable from './BackendPaginatedTable'
 import type { DataParameters } from './types'
 import useBackendPaginatedTable from './hooks/useBackendPaginatedTable'
+import exportToExcel from './exportToExcel'
 
 export {
   XTable,
@@ -13,5 +14,6 @@ export {
   TableHead,
   DataParameters,
   BackendPaginatedTable,
-  useBackendPaginatedTable
+  useBackendPaginatedTable,
+  exportToExcel
 }
